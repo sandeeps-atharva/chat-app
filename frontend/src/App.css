@@ -1,0 +1,375 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Login Page Styles */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #60a5fa, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-icon {
+  margin: 0 auto 1rem;
+  height: 3rem;
+  width: 3rem;
+  color: #3b82f6;
+}
+
+.login-title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  color: #6b7280;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  ring: 2px;
+  ring-color: #3b82f6;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.form-button {
+  width: 100%;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-button:hover {
+  background-color: #2563eb;
+}
+
+.form-button:disabled,
+.form-button.loading {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.toggle-form {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.toggle-button {
+  color: #3b82f6;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.toggle-button:hover {
+  color: #2563eb;
+}
+
+/* Chat Page Styles */
+.chat-container {
+  height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-icon {
+  height: 2rem;
+  width: 2rem;
+  color: #3b82f6;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: #6b7280;
+}
+
+.username {
+  color: #374151;
+  font-weight: 500;
+}
+
+.logout-button {
+  padding: 0.5rem;
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-button:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.logout-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message-wrapper {
+  display: flex;
+}
+
+.message-wrapper.own-message {
+  justify-content: flex-end;
+}
+
+.message-wrapper.other-message {
+  justify-content: flex-start;
+}
+
+.message {
+  max-width: 20rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  word-wrap: break-word;
+}
+
+.message-own {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.message-other {
+  background-color: white;
+  color: #1f2937;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.message-username {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.message-content {
+  word-break: break-words;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.message-time-own {
+  color: #dbeafe;
+}
+
+.message-time-other {
+  color: #6b7280;
+}
+
+.input-container {
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.message-input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.message-input:focus {
+  ring: 2px;
+  ring-color: #3b82f6;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.send-button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.send-button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.send-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+/* Responsive design */
+@media (min-width: 1024px) {
+  .message {
+    max-width: 28rem;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading::after {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
