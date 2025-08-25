@@ -1,44 +1,319 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+// const express = require("express");
+// const http = require("http");
+// const socketIo = require("socket.io");
+// const cors = require("cors");
+// const mysql = require("mysql2/promise");
+// const bcrypt = require("bcrypt");
+// const jwt = require("jsonwebtoken");
+// const dotenv = require("dotenv");
+
+// dotenv.config();
+
+// const app = express();
+// const server = http.createServer(app);
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST"],
+//   },
+// });
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Database connection
+// const dbConfig = {
+//   host: process.env.DB_HOST || "localhost",
+//   user: process.env.DB_USER || "root",
+//   password: process.env.DB_PASSWORD || "",
+//   database: process.env.DB_NAME || "chatapp",
+// };
+
+// let db;
+
+// async function initDatabase() {
+//   try {
+//     db = await mysql.createConnection(dbConfig);
+//     console.log("Connected to MySQL database");
+
+//     // Create tables
+//     await db.execute(`
+//       CREATE TABLE IF NOT EXISTS users (
+//         id INT AUTO_INCREMENT PRIMARY KEY,
+//         username VARCHAR(50) UNIQUE NOT NULL,
+//         email VARCHAR(100) UNIQUE NOT NULL,
+//         password VARCHAR(255) NOT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//       )
+//     `);
+
+//     await db.execute(`
+//       CREATE TABLE IF NOT EXISTS messages (
+//         id INT AUTO_INCREMENT PRIMARY KEY,
+//         user_id INT,
+//         username VARCHAR(50) NOT NULL,
+//         message TEXT NOT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+//       )
+//     `);
+
+//     console.log("Database tables created successfully");
+//   } catch (error) {
+//     console.error("Database connection error:", error);
+//   }
+// }
+
+// // JWT middleware
+// const authenticateToken = (req, res, next) => {
+//   const authHeader = req.headers["authorization"];
+//   const token = authHeader && authHeader.split(" ")[1];
+
+//   if (!token) {
+//     return res.sendStatus(401);
+//   }
+
+//   jwt.verify(
+//     token,
+//     process.env.JWT_SECRET || "your-secret-key",
+//     (err, user) => {
+//       if (err) return res.sendStatus(403);
+//       req.user = user;
+//       next();
+//     }
+//   );
+// };
+
+// // Routes
+// app.post("/api/register", async (req, res) => {
+//   try {
+//     const { username, email, password } = req.body;
+
+//     if (!username || !email || !password) {
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const [result] = await db.execute(
+//       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+//       [username, email, hashedPassword]
+//     );
+
+//     const token = jwt.sign(
+//       { id: result.insertId, username, email },
+//       process.env.JWT_SECRET || "your-secret-key"
+//     );
+
+//     res.json({ token, user: { id: result.insertId, username, email } });
+//   } catch (error) {
+//     if (error.code === "ER_DUP_ENTRY") {
+//       res.status(400).json({ error: "Username or email already exists" });
+//     } else {
+//       res.status(500).json({ error: "Server error" });
+//     }
+//   }
+// });
+
+// app.post("/api/login", async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+
+//     const [rows] = await db.execute("SELECT * FROM users WHERE username = ?", [
+//       username,
+//     ]);
+
+//     if (rows.length === 0) {
+//       return res.status(400).json({ error: "Invalid credentials" });
+//     }
+
+//     const user = rows[0];
+//     const validPassword = await bcrypt.compare(password, user.password);
+
+//     if (!validPassword) {
+//       return res.status(400).json({ error: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user.id, username: user.username, email: user.email },
+//       process.env.JWT_SECRET || "your-secret-key"
+//     );
+
+//     res.json({
+//       token,
+//       user: {
+//         id: user.id,
+//         username: user.username,
+//         email: user.email,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+// app.get("/api/messages", authenticateToken, async (req, res) => {
+//   try {
+//     const [rows] = await db.execute(
+//       "SELECT * FROM messages ORDER BY created_at ASC LIMIT 100"
+//     );
+//     res.json(rows);
+//   } catch (error) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+// app.post("/api/messages", authenticateToken, async (req, res) => {
+//   try {
+//     const { message } = req.body;
+//     const { id, username } = req.user;
+
+//     const [result] = await db.execute(
+//       "INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)",
+//       [id, username, message]
+//     );
+
+//     const newMessage = {
+//       id: result.insertId,
+//       user_id: id,
+//       username,
+//       message,
+//       created_at: new Date(),
+//     };
+
+//     // Broadcast to all connected clients
+//     io.emit("new_message", newMessage);
+
+//     res.json(newMessage);
+//   } catch (error) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+// // Socket.io connection handling
+// io.on("connection", (socket) => {
+//   console.log("User connected:", socket.id);
+
+//   socket.on("join_room", (userData) => {
+//     socket.userData = userData;
+//     console.log(`${userData.username} joined the chat`);
+//   });
+
+//   socket.on("send_message", async (messageData) => {
+//     try {
+//       const { user_id, username, message } = messageData;
+
+//       const [result] = await db.execute(
+//         "INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)",
+//         [user_id, username, message]
+//       );
+
+//       const newMessage = {
+//         id: result.insertId,
+//         user_id,
+//         username,
+//         message,
+//         created_at: new Date(),
+//       };
+
+//       io.emit("receive_message", newMessage);
+//     } catch (error) {
+//       console.error("Error saving message:", error);
+//     }
+//   });
+
+//   socket.on("disconnect", () => {
+//     if (socket.userData) {
+//       console.log(`${socket.userData.username} disconnected`);
+//     }
+//   });
+// });
+
+// const PORT = process.env.PORT || 5000;
+
+// initDatabase().then(() => {
+//   server.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+//   });
+// });
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const cors = require("cors");
+const mysql = require("mysql2/promise");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// CORS configuration for production
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3001',
-    methods: ['GET', 'POST']
-  }
+    origin:
+      process.env.NODE_ENV === "production"
+        ? ["https://your-netlify-domain.netlify.app"]
+        : "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://your-netlify-domain.netlify.app"
+        : "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-// Database connection
+// Serve static files in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+  });
+}
+
+// Database connection - use Render's internal database or external DB
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'chatapp'
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "chatapp",
+  port: process.env.DB_PORT || 3306,
+  // Add connection pooling for better performance
+  connectionLimit: 10,
+  acquireTimeout: 60000,
+  connectTimeout: 60000,
+  timeout: 60000,
+  reconnect: true,
 };
 
-let db;
+let pool;
 
 async function initDatabase() {
   try {
-    db = await mysql.createConnection(dbConfig);
-    console.log('Connected to MySQL database');
+    // Create connection pool
+    pool = mysql.createPool(dbConfig);
+
+    // Test connection
+    const connection = await pool.getConnection();
+    console.log("Connected to MySQL database");
+    await connection.release();
 
     // Create tables
-    await db.execute(`
+    await pool.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
@@ -48,7 +323,7 @@ async function initDatabase() {
       )
     `);
 
-    await db.execute(`
+    await pool.execute(`
       CREATE TABLE IF NOT EXISTS messages (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
@@ -59,22 +334,24 @@ async function initDatabase() {
       )
     `);
 
-    console.log('Database tables created successfully');
+    console.log("Database tables created successfully");
   } catch (error) {
-    console.error('Database connection error:', error);
+    console.error("Database connection error:", error);
+    // Retry connection after delay
+    setTimeout(initDatabase, 5000);
   }
 }
 
 // JWT middleware
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
@@ -82,54 +359,68 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Routes
-app.post('/api/register', async (req, res) => {
+app.post("/api/register", async (req, res) => {
+  let connection;
   try {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ error: "All fields are required" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [result] = await db.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [
-      username,
-      email,
-      hashedPassword
-    ]);
+    connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+      [username, email, hashedPassword]
+    );
 
-    const token = jwt.sign({ id: result.insertId, username, email }, process.env.JWT_SECRET || 'your-secret-key');
+    const token = jwt.sign(
+      { id: result.insertId, username, email },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
 
     res.json({ token, user: { id: result.insertId, username, email } });
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      res.status(400).json({ error: 'Username or email already exists' });
+    if (error.code === "ER_DUP_ENTRY") {
+      res.status(400).json({ error: "Username or email already exists" });
     } else {
-      res.status(500).json({ error: 'Server error' });
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Server error" });
     }
+  } finally {
+    if (connection) await connection.release();
   }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post("/api/login", async (req, res) => {
+  let connection;
   try {
     const { username, password } = req.body;
 
-    const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+    connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE username = ?",
+      [username]
+    );
 
     if (rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const user = rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const token = jwt.sign(
       { id: user.id, username: user.username, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key'
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
     );
 
     res.json({
@@ -137,85 +428,105 @@ app.post('/api/login', async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    if (connection) await connection.release();
   }
 });
 
-app.get('/api/messages', authenticateToken, async (req, res) => {
+app.get("/api/messages", authenticateToken, async (req, res) => {
+  let connection;
   try {
-    const [rows] = await db.execute('SELECT * FROM messages ORDER BY created_at ASC LIMIT 100');
+    connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      "SELECT * FROM messages ORDER BY created_at ASC LIMIT 100"
+    );
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    if (connection) await connection.release();
   }
 });
 
-app.post('/api/messages', authenticateToken, async (req, res) => {
+app.post("/api/messages", authenticateToken, async (req, res) => {
+  let connection;
   try {
     const { message } = req.body;
     const { id, username } = req.user;
 
-    const [result] = await db.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)', [
-      id,
-      username,
-      message
-    ]);
+    connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      "INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)",
+      [id, username, message]
+    );
 
     const newMessage = {
       id: result.insertId,
       user_id: id,
       username,
       message,
-      created_at: new Date()
+      created_at: new Date(),
     };
 
-    // Broadcast to all connected clients
-    io.emit('new_message', newMessage);
-
+    io.emit("new_message", newMessage);
     res.json(newMessage);
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error sending message:", error);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    if (connection) await connection.release();
   }
 });
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+// Health check endpoint for Render
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
-  socket.on('join_room', (userData) => {
+// Socket.io connection handling
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("join_room", (userData) => {
     socket.userData = userData;
     console.log(`${userData.username} joined the chat`);
   });
 
-  socket.on('send_message', async (messageData) => {
+  socket.on("send_message", async (messageData) => {
+    let connection;
     try {
       const { user_id, username, message } = messageData;
 
-      const [result] = await db.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)', [
-        user_id,
-        username,
-        message
-      ]);
+      connection = await pool.getConnection();
+      const [result] = await connection.execute(
+        "INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)",
+        [user_id, username, message]
+      );
 
       const newMessage = {
         id: result.insertId,
         user_id,
         username,
         message,
-        created_at: new Date()
+        created_at: new Date(),
       };
 
-      io.emit('receive_message', newMessage);
+      io.emit("receive_message", newMessage);
     } catch (error) {
-      console.error('Error saving message:', error);
+      console.error("Error saving message:", error);
+    } finally {
+      if (connection) await connection.release();
     }
   });
 
-  socket.on('disconnect', () => {
+  socket.on("disconnect", () => {
     if (socket.userData) {
       console.log(`${socket.userData.username} disconnected`);
     }
